@@ -1,16 +1,6 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { HashRouter, Route, Routes } from 'react-router-dom'
-import { Root } from './Root.js'
-import indexCss from "./index.css?inline"
+import ReactDOM from 'react-dom/client';
+import { App } from "./App";
+import "./missing.min.css";
+import "./main.css";
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <style dangerouslySetInnerHTML={{ __html: indexCss }} />
-    <HashRouter>
-      <Routes>
-        <Route path="/" element={<Root/>}/>
-      </Routes>
-    </HashRouter>
-  </React.StrictMode>,
-);
+ReactDOM.createRoot(document.getElementById('root')!).render(<App/>);
