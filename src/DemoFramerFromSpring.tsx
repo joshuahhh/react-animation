@@ -9,7 +9,7 @@ export const description = <>
   </small>
 </>;
 
-export function Demo ({ visibleCircles, allCircles }: {
+export function Demo({ visibleCircles, allCircles }: {
   visibleCircles: number[],
   allCircles: number[],
 }) {
@@ -39,6 +39,7 @@ export function AnimatedCircle({ index, isShowing }: {
       transition={{
         duration: 1.2
       }}
+      initial={false}
       animate={{
         r: isShowing ? 6 : 0,
         opacity: isShowing ? 1 : 0,
