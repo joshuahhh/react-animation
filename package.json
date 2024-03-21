@@ -23,7 +23,7 @@
     "@vitejs/plugin-react": "^4.2.1",
     "eslint": "^8.56.0",
     "eslint-config-react-app": "7.0.1",
-    "typescript": "^5.2.2",
+    "typescript": "^5.4.2",
     "vite": "^5.1.0"
   }
 }

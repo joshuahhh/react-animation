@@ -1,12 +1,18 @@
 import * as d3 from "d3"
+import { AnimatePresence, motion, useAnimate } from "framer-motion"
 import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react'
-import * as DemoD3 from "./DemoD3"
+import { Animate } from "./Animate"
+import { BarsDemoAnimateComponentAsync } from "./BarsDemoAnimateComponentAsync"
+import { BarsDemoD3 } from "./BarsDemoD3"
+import { BarsDemoFramer } from "./BarsDemoFramer"
 import * as DemoAmelia from "./DemoAmelia"
-import * as DemoFramerFromSpring from "./DemoFramerFromSpring"
+import * as DemoD3 from "./DemoD3"
+import * as DemoFramerAnimateComponent from "./DemoFramerAnimateComponent"
 import * as DemoFramerDeclarative from "./DemoFramerDeclarative"
+import * as DemoFramerFromSpring from "./DemoFramerFromSpring"
 import * as DemoFramerUseAnimate from "./DemoFramerUseAnimate"
-import { AnimatePresence, animate, motion } from "framer-motion"
-import { update } from "@react-spring/web"
+import { Mount } from "./Mount"
+import { BarsDemoAnimateComponentSeq } from "./BarsDemoAnimateComponentSeq"
 
 
 export function App() {
@@ -46,6 +52,9 @@ export function App() {
     <p>
       Small difference in behavior when you change layout type faster than animations: D3 finishes the old animation before moving to the new one; Framer Motion cancels the old animation and starts the new one immediately. Can't say for sure which is preferable.
     </p>
+
+    <h2>Scratch space</h2>
+    <ScratchSpace/>
 
     <h2>Notes</h2>
     <small>
@@ -138,6 +147,7 @@ const demos: CirclesDemo[] = [
   DemoFramerFromSpring,
   DemoFramerDeclarative,
   DemoFramerUseAnimate,
+  DemoFramerAnimateComponent,
 ]
 
 // letters
@@ -247,286 +257,44 @@ function BarsDemos() {
     }
   }, 3000);
 
-  return <>
-    <div className="tool-bar">
-      <label className="f-row crowded">
+  return <div className="relative">
+    <div className="tool-bar navbar">
+      <label className="f-row crowded"
+        onClick={(e) => {
+          e.preventDefault();
+          setUpdateAutomatically((old) => !old);
+        }}>
         <input type="checkbox" checked={updateAutomatically} onChange={e => setUpdateAutomatically(e.target.checked)} />
         Update automatically
       </label>
       <hr aria-orientation="vertical" />
       {['stacked', 'grouped'].map(l =>
-        <label key={l} className="f-row crowded">
+        <label key={l} className="f-row crowded"
+          onClick={(e) => {
+            e.preventDefault();
+            setLayout(l as 'stacked' | 'grouped');
+          }}>
           <input type="radio" name="layout" value="stacked"
             checked={layout === l}
-            onChange={() => setLayout(l as 'stacked' | 'grouped')} />
+            onChange={(e) => {
+              setLayout(l as 'stacked' | 'grouped');
+              // e.preventDefault();
+            }} />
           {l[0].toUpperCase() + l.slice(1)}
         </label>
       )}
     </div>
-    <h3>Original</h3>
-    <BarsDemoD3 {...{xz, yz, layout}} />
-    <h3>Framer Motion</h3>
-    <BarsDemoFramer {...{xz, yz, layout}} />
-  </>;
-}
-
-function BarsDemoD3({ xz, yz, layout }: {
-  xz: number[],
-  yz: number[][],
-  layout: 'stacked' | 'grouped',
-}) {
-  const [svg, update] = useMemo(() => {
-    const n = yz.length;
-
-    const width = 928;
-    const height = 500;
-    const marginTop = 0;
-    const marginRight = 0;
-    const marginBottom = 10;
-    const marginLeft = 0;
-
-    const y01z = d3.stack()
-        .keys(d3.range(n).map(String))
-      (d3.transpose(yz) as any) // stacked yz
-      .map((data, i) => data.map(([y0, y1]) => [y0, y1, i]));
-
-    const yMax = d3.max(yz, y => d3.max(y))!;
-    const y1Max = d3.max(y01z, y => d3.max(y, d => d[1]))!;
-
-    const x = d3.scaleBand<number>()
-        .domain(xz)
-        .rangeRound([marginLeft, width - marginRight])
-        .padding(0.08);
-
-    const y = d3.scaleLinear<number>()
-        .domain([0, y1Max])
-        .range([height - marginBottom, marginTop]);
-
-    const color = d3.scaleSequential(d3.interpolateBlues)
-        .domain([-0.5 * n, 1.5 * n]);
-
-    const svg = d3.create("svg")
-        .attr("viewBox", [0, 0, width, height])
-        .attr("width", width)
-        .attr("height", height)
-        .attr("style", "max-width: 100%; height: auto;");
-
-    const rect = svg.selectAll("g")
-      .data(y01z)
-      .join("g")
-        .attr("fill", (_d, i) => color(i))
-      .selectAll("rect")
-      .data(d => d)
-      .join("rect")
-        .attr("x", (_d, i) => x(i)!)
-        .attr("y", height - marginBottom)
-        .attr("width", x.bandwidth())
-        .attr("height", 0);
-
-    svg.append("g")
-        .attr("transform", `translate(0,${height - marginBottom})`)
-        .call(d3.axisBottom(x).tickSizeOuter(0).tickFormat(() => ""));
-
-    function transitionGrouped() {
-      y.domain([0, yMax]);
-
-      rect.transition()
-          .duration(500)
-          .delay((_d, i) => i * 20)
-          .attr("x", (d, i) => x(i)! + x.bandwidth() / n * d[2])
-          .attr("width", x.bandwidth() / n)
-        .transition()
-          .attr("y", d => y(d[1] - d[0]))
-          .attr("height", d => y(0) - y(d[1] - d[0]));
-    }
-
-    function transitionStacked() {
-      y.domain([0, y1Max]);
-
-      rect.transition()
-          .duration(500)
-          .delay((_d, i) => i * 20)
-          .attr("y", d => y(d[1]))
-          .attr("height", d => y(d[0]) - y(d[1]))
-        .transition()
-          .attr("x", (_d, i) => x(i)!)
-          .attr("width", x.bandwidth());
-    }
-
-    function update(layout: 'stacked' | 'grouped') {
-      if (layout === "stacked") transitionStacked();
-      else transitionGrouped();
-    }
-
-    return [svg.node()!, update];
-  }, [xz, yz]);
-
-  useEffect(() => {
-    update(layout);
-  }, [layout, update]);
-
-  return <Mount elem={svg} />;
-}
-
-function BarsDemoFramer({ xz, yz, layout }: {
-  xz: number[],
-  yz: number[][],
-  layout: 'stacked' | 'grouped',
-}) {
-  const n = yz.length;
-
-  const width = 928;
-  const height = 500;
-  const marginTop = 0;
-  const marginRight = 0;
-  const marginBottom = 10;
-  const marginLeft = 0;
-
-  const y01z = d3.stack()
-      .keys(d3.range(n).map(String))
-    (d3.transpose(yz) as any) // stacked yz
-    .map((data, i) => data.map(([y0, y1]) => [y0, y1, i] as const));
-
-  const yMax = d3.max(yz, y => d3.max(y))!;
-  const y1Max = d3.max(y01z, y => d3.max(y, d => d[1]))!;
-
-  const x = d3.scaleBand<number>()
-      .domain(xz)
-      .rangeRound([marginLeft, width - marginRight])
-      .padding(0.08);
-
-  const y = d3.scaleLinear<number>()
-      .range([height - marginBottom, marginTop]);
-  if (layout === "grouped") {
-    y.domain([0, yMax]);
-  } else {
-    y.domain([0, y1Max]);
-  }
-
-  const color = d3.scaleSequential(d3.interpolateBlues)
-      .domain([-0.5 * n, 1.5 * n]);
-
-  return <svg
-    viewBox={`0 0 ${width} ${height}`}
-    width={width} height={height}
-    style={{maxWidth: "100%", height: "auto"}}
-  >
-    {y01z.map((d, i) =>
-      <g key={i} fill={color(i)}>
-        {d.map((d, j) => {
-          if (true) {
-            const childDelay = j * 0.02;
-            const stage1 = { delay: childDelay, duration: 0.5 };
-            const stage2 = { delay: childDelay + 0.5, duration: 0.25 };
-            return <motion.rect
-              key={j}
-              initial={{
-                y: height - marginBottom,
-                height: 0,
-                x: x(j),
-                width: x.bandwidth(),
-              }}
-              animate={layout === "stacked" ?
-                {
-                  y: y(d[1]),
-                  height: y(d[0]) - y(d[1]),
-                  x: x(j),
-                  width: x.bandwidth(),
-                } :
-                {
-                  y: y(d[1] - d[0]),
-                  height: y(0) - y(d[1] - d[0]),
-                  x: x(j)! + x.bandwidth() / n * d[2],
-                  width: x.bandwidth() / n
-                }
-              }
-              transition={layout === "stacked" ?
-                {
-                  y: stage1, height: stage1,
-                  x: stage2, width: stage2,
-                } :
-                {
-                  x: stage1, width: stage1,
-                  y: stage2, height: stage2,
-                }
-              }
-            />;
-          }
-
-          if (false) {
-            const childDelay = j * 0.02;
-            return <motion.rect
-              key={j}
-              initial={{
-                y: height - marginBottom,
-                height: 0,
-                x: x(j),
-                width: x.bandwidth(),
-              }}
-              animate={layout === "stacked" ?
-                {
-                  y: [null, y(d[1]), y(d[1])],
-                  height: [null, y(d[0]) - y(d[1]), y(d[0]) - y(d[1])],
-                  x: [null, null, x(j)],
-                  width: [null, null, x.bandwidth()],
-                } :
-                {
-                  x: [null, x(j)! + x.bandwidth() / n * d[2], undefined],
-                  width: [null, x.bandwidth() / n, undefined],
-                  y: [null, undefined, y(d[1] - d[0])],
-                  height: [null, undefined, y(0) - y(d[1] - d[0])],
-                }
-              }
-              transition={{
-                duration: childDelay + 0.75,
-                times: [childDelay / (childDelay + 0.75), (childDelay + 0.5) / (childDelay + 0.75), (childDelay + 0.75) / childDelay + 0.75],
-              }}
-            />;
-          }
-
-          if (false) {
-            return <motion.rect
-              key={j}
-              initial={{
-                y: height - marginBottom,
-                height: 0,
-                x: x(j),
-                width: x.bandwidth(),
-              }}
-              animate={layout === "stacked" ?
-                sequence([
-                  [{}, { duration: j * 0.02 }],
-                  [{ y: y(d[1]), height: y(d[0]) - y(d[1]) }, { duration: 0.5 }],
-                  [{ x: x(j), width: x.bandwidth() }, { duration: 0.25 }],
-                ]) :
-                sequence([
-                  [{}, { duration: j * 0.02 }],
-                  [{ x: x(j)! + x.bandwidth() / n * d[2], width: x.bandwidth() / n }, { duration: 0.5 }],
-                  [{ y: y(d[1] - d[0]), height: y(0) - y(d[1] - d[0]) }, { duration: 0.25 }],
-                ])
-              }
-            />;
-          }
-        })}
-      </g>
-    )}
-
-    <g
-      ref={(elem) => elem &&
-        d3.axisBottom(x).tickSizeOuter(0).tickFormat(() => "")
-          (d3.select(elem))
-      }
-      transform={`translate(0, ${height - marginBottom})`}
-    />
-  </svg>;
-}
-
-function sequence(sequence: any) {
-  return animate('rect', [
-    ...sequence.map(([to, transition]: any) => (
-      ['rect', to, transition]
-    )),
-  ]);
+    <div style={{ display: "grid", gridTemplateColumns: "auto 400px", gap: 10 }}>
+      <h3>Original</h3>
+      <BarsDemoD3 {...{xz, yz, layout}} />
+      <h3>Framer Motion</h3>
+      <BarsDemoFramer {...{xz, yz, layout}} />
+      <h3>Josh's Animate component (async style)</h3>
+      <BarsDemoAnimateComponentAsync {...{xz, yz, layout}} />
+      <h3>Josh's Animate component (seq style)</h3>
+      <BarsDemoAnimateComponentSeq {...{xz, yz, layout}} />
+    </div>
+  </div>;
 }
 
 // Returns an array of m pseudorandom, smoothly-varying non-negative numbers.
@@ -559,6 +327,45 @@ function bumps(m: number) {
   return values;
 }
 
+// scratch space
+
+function ScratchSpace() {
+  const [x, setX] = useState(30);
+
+  useInterval(() => {
+    setX((old) => 100 - old);
+  }, 1000);
+
+  const [ scope, animate ] = useAnimate();
+
+  useEffect(() => {
+    animate(scope.current, { attrX: 100 - x, attrY: 0, width: 10, height: 10 }, { duration: 1 });
+  }, [animate, scope, x]);
+
+  return <svg viewBox="0 0 100 30">
+    <rect ref={scope} fill="cornflowerblue" />
+    <Animate
+      animator={async ({ animate }) => {
+        await animate([
+          [".", { cx: x }, { duration: 1 }],
+          [".", { r: 10 }, { duration: 0.5, at: 0 }],
+          [".", { r: 5 }, { duration: 0.5 }],
+        ])
+        // await Promise.all([
+        //   (async () => {
+        //     await animate(".", { cx: x }, { duration: 1 });
+        //   })(),
+        //   (async () => {
+        //     await animate(".", { r: 10 }, { duration: 0.5 });
+        //     await animate(".", { r: 5 }, { duration: 0.5 });
+        //   })(),
+        // ])
+      }}
+    >
+      <circle cx={x} cy="15" r="5" fill="cornflowerblue" />
+    </Animate>
+  </svg>;
+}
 
 // common utilities
 
@@ -580,17 +387,4 @@ function useInterval(callback: () => void, delay: number) {
       return () => clearInterval(id);
     }
   }, [delay]);
-}
-
-function Mount({ elem }: { elem: Element }) {
-  const [container, setContainer] = useState<HTMLElement | null>(null);
-  useEffect(() => {
-    if (container) {
-      container.appendChild(elem);
-      return () => {
-        container.removeChild(elem);
-      };
-    }
-  }, [container, elem]);
-  return <div ref={setContainer} />;
 }
