@@ -1,4 +1,4 @@
-import { AnimationPlaybackControls, AnimationSequence, useAnimate, usePresence } from "framer-motion";
+import { AnimationPlaybackControls, AnimationSequence, SVGKeyframesDefinition, useAnimate, usePresence } from "framer-motion";
 import { ReactElement, cloneElement, useEffect, useMemo } from "react";
 
 
@@ -94,3 +94,7 @@ export function delay(duration: number): Promise<void> {
     setTimeout(resolve, duration * 1000);
   });
 }
+
+// type workaround per https://github.com/framer/motion/issues/2580
+export const attrX = "attrX" as keyof SVGKeyframesDefinition;
+export const attrY = "attrY" as keyof SVGKeyframesDefinition;

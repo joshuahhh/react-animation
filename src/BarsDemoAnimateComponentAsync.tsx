@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { Animate, delay } from "./Animate";
+import { Animate, attrX, attrY, delay } from "./Animate";
 
 
 export function BarsDemoAnimateComponentAsync({ xz, yz, layout }: {
@@ -53,17 +53,17 @@ export function BarsDemoAnimateComponentAsync({ xz, yz, layout }: {
               await delay(j * 0.02);
               if (layout === "stacked") {
                 await animate(".",
-                  { attrY: y(d[1]), height: y(d[0]) - y(d[1]) },
+                  { [attrY]: y(d[1]), height: y(d[0]) - y(d[1]) },
                   { duration: 0.5 });
                 await animate(".",
-                  { attrX: x(j), width: x.bandwidth() },
+                  { [attrX]: x(j)!, width: x.bandwidth() },
                   { duration: 0.25 });
               } else {
                 await animate(".",
-                  { attrX: x(j)! + x.bandwidth() / n * d[2], width: x.bandwidth() / n },
+                  { [attrX]: x(j)! + x.bandwidth() / n * d[2], width: x.bandwidth() / n },
                   { duration: 0.5 });
                 await animate(".",
-                  { attrY: y(d[1] - d[0]), height: y(0) - y(d[1] - d[0]) },
+                  { [attrY]: y(d[1] - d[0]), height: y(0) - y(d[1] - d[0]) },
                   { duration: 0.25 });
               }
             }}

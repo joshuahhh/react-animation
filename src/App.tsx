@@ -276,10 +276,8 @@ function BarsDemos() {
           }}>
           <input type="radio" name="layout" value="stacked"
             checked={layout === l}
-            onChange={(e) => {
-              setLayout(l as 'stacked' | 'grouped');
-              // e.preventDefault();
-            }} />
+            onChange={() => setLayout(l as 'stacked' | 'grouped')}
+          />
           {l[0].toUpperCase() + l.slice(1)}
         </label>
       )}

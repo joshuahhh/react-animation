@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { Animate } from "./Animate";
+import { Animate, attrX, attrY } from "./Animate";
 
 
 export function BarsDemoAnimateComponentSeq({ xz, yz, layout }: {
@@ -52,15 +52,15 @@ export function BarsDemoAnimateComponentSeq({ xz, yz, layout }: {
             sequence={
               layout === "stacked"
               ? [
-                  [".", { attrY: y(d[1]), height: y(d[0]) - y(d[1]) },
+                  [".", { [attrY]: y(d[1]), height: y(d[0]) - y(d[1]) },
                     { duration: 0.5, at: j * 0.02 }],
-                  [".", { attrX: x(j), width: x.bandwidth() },
+                  [".", { [attrX]: x(j)!, width: x.bandwidth() },
                     { duration: 0.25 }],
                 ]
               : [
-                  [".", { attrX: x(j)! + x.bandwidth() / n * d[2], width: x.bandwidth() / n },
+                  [".", { [attrX]: x(j)! + x.bandwidth() / n * d[2], width: x.bandwidth() / n },
                     { duration: 0.5, at: j * 0.02 }],
-                  [".", { attrY: y(d[1] - d[0]), height: y(0) - y(d[1] - d[0]) },
+                  [".", { [attrY]: y(d[1] - d[0]), height: y(0) - y(d[1] - d[0]) },
                     { duration: 0.25 }],
                 ]
             }
