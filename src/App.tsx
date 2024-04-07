@@ -1,18 +1,17 @@
 import * as d3 from "d3"
-import { AnimatePresence, motion, useAnimate } from "framer-motion"
 import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react'
-import { Animate } from "./Animate"
-import { BarsDemoAnimateComponentAsync } from "./BarsDemoAnimateComponentAsync"
-import { BarsDemoD3 } from "./BarsDemoD3"
-import { BarsDemoFramer } from "./BarsDemoFramer"
-import * as DemoAmelia from "./DemoAmelia"
-import * as DemoD3 from "./DemoD3"
-import * as DemoFramerAnimateComponent from "./DemoFramerAnimateComponent"
-import * as DemoFramerDeclarative from "./DemoFramerDeclarative"
-import * as DemoFramerFromSpring from "./DemoFramerFromSpring"
-import * as DemoFramerUseAnimate from "./DemoFramerUseAnimate"
-import { Mount } from "./Mount"
-import { BarsDemoAnimateComponentSeq } from "./BarsDemoAnimateComponentSeq"
+import { BarsDemoAnimateComponentAsync } from "./BarsAnimateComponentAsync"
+import { BarsDemoAnimateComponentSeq } from "./BarsAnimateComponentSeq"
+import { BarsDemoD3 } from "./BarsD3"
+import { BarsDemoFramer } from "./BarsFramer"
+import * as CirclesAmelia from "./CirclesAmelia"
+import * as CirclesD3 from "./CirclesD3"
+import * as CirclesFramerAnimateComponent from "./CirclesFramerAnimateComponent"
+import * as CirclesFramerDeclarative from "./CirclesFramerDeclarative"
+import * as CirclesFramerFromSpring from "./CirclesFramerFromSpring"
+import * as CirclesFramerUseAnimate from "./CirclesFramerUseAnimate"
+import { LettersDemoD3 } from "./LettersD3"
+import { LettersDemoFramer } from "./LettersFramer"
 
 
 export function App() {
@@ -45,16 +44,6 @@ export function App() {
     <h2>A bigger example</h2>
 
     <BarsDemos />
-
-    <p>
-      Current stance: It's doable, but I think the sequencing API (that I'm using) is inferior to D3. Seems like I should use useAnimate for sequencing, but that requires making a per-rectangle component, which is unergonomic.
-    </p>
-    <p>
-      Small difference in behavior when you change layout type faster than animations: D3 finishes the old animation before moving to the new one; Framer Motion cancels the old animation and starts the new one immediately. Can't say for sure which is preferable.
-    </p>
-
-    <h2>Scratch space</h2>
-    <ScratchSpace/>
 
     <h2>Notes</h2>
     <small>
@@ -136,18 +125,18 @@ function CirclesDemos() {
   </>;
 }
 
-type CirclesDemo = {
+type Circles = {
   description: React.ReactNode,
   Demo: React.ComponentType<{ visibleCircles: number[], allCircles: number[] }>,
 }
 
-const demos: CirclesDemo[] = [
-  DemoD3,
-  DemoAmelia,
-  DemoFramerFromSpring,
-  DemoFramerDeclarative,
-  DemoFramerUseAnimate,
-  DemoFramerAnimateComponent,
+const demos: Circles[] = [
+  CirclesD3,
+  CirclesAmelia,
+  CirclesFramerFromSpring,
+  CirclesFramerDeclarative,
+  CirclesFramerUseAnimate,
+  CirclesFramerAnimateComponent,
 ]
 
 // letters
@@ -171,74 +160,6 @@ function LettersDemos() {
     {/* <div><h3>Data</h3></div>
     <div>{randomLetters.join("")}</div> */}
   </div>;
-}
-
-function LettersDemoD3({ letters }: { letters: string[] }) {
-  const [svg, update] = useMemo(() => {
-    const svg = d3.create("svg")
-      .attr("viewBox", [0, 0, 400, 33])
-      .attr("font-family", "sans-serif")
-      .attr("font-size", 10)
-      .style("display", "block");
-
-    return [
-      svg.node()!,
-      (letters: string[]) => {
-        const t = svg.transition().duration(750) as any;
-
-        svg.selectAll("text")
-          .data(letters, d => String(d))
-          .join(
-            enter => enter.append("text")
-              .attr("y", -7)
-              .attr("dy", "0.35em")
-              .attr("x", (_d, i) => i * 17)
-              .text(d => String(d)),
-            update => update,
-            exit => exit
-              .call(text => text.transition(t).remove()
-                .attr("y", 41))
-          )
-            .call(text => text.transition(t)
-              .attr("y", 17)
-              .attr("x", (_d, i) => i * 17));
-      }
-    ];
-  }, []);
-
-  useEffect(() => {
-    update(letters);
-  }, [letters, update]);
-
-  return <Mount elem={svg} />;
-}
-
-function LettersDemoFramer({ letters }: { letters: string[] }) {
-  return (
-    <svg
-      viewBox="0 0 400 33"
-      style={{
-        display: "block",
-        fontFamily: "sans-serif",
-        fontSize: 10,
-      }}
-    >
-      <AnimatePresence initial={true}>
-        {letters.map((d, i) =>
-          <motion.text
-            key={d}
-            dy="0.35em"
-            initial={{ y: -7, x: i * 17 }}
-            animate={{ y: 17, x: i * 17 }}
-            exit={{ y: 41 }}
-            transition={{ duration: 0.75 }}
-          >
-            {d}
-          </motion.text>
-        )}
-      </AnimatePresence>
-    </svg>
-  );
 }
 
 // bars
@@ -287,6 +208,14 @@ function BarsDemos() {
       <BarsDemoD3 {...{xz, yz, layout}} />
       <h3>Framer Motion</h3>
       <BarsDemoFramer {...{xz, yz, layout}} />
+      <div style={{ gridColumn: 'span 2 / span 2' }}>
+      <p>
+        Current stance: It's doable, but I think the sequencing API (that I'm using) is inferior to D3. Seems like I should use useAnimate for sequencing, but that requires making a per-rectangle component, which is unergonomic.
+      </p>
+      <p>
+        Small difference in behavior when you change layout type faster than animations: D3 finishes the old animation before moving to the new one; Framer Motion cancels the old animation and starts the new one immediately. Can't say for sure which is preferable.
+      </p>
+      </div>
       <h3>Josh's Animate component (async style)</h3>
       <BarsDemoAnimateComponentAsync {...{xz, yz, layout}} />
       <h3>Josh's Animate component (seq style)</h3>
@@ -323,46 +252,6 @@ function bumps(m: number) {
   }
 
   return values;
-}
-
-// scratch space
-
-function ScratchSpace() {
-  const [x, setX] = useState(30);
-
-  useInterval(() => {
-    setX((old) => 100 - old);
-  }, 1000);
-
-  const [ scope, animate ] = useAnimate();
-
-  useEffect(() => {
-    animate(scope.current, { attrX: 100 - x, attrY: 0, width: 10, height: 10 }, { duration: 1 });
-  }, [animate, scope, x]);
-
-  return <svg viewBox="0 0 100 30">
-    <rect ref={scope} fill="cornflowerblue" />
-    <Animate
-      animator={async ({ animate }) => {
-        await animate([
-          [".", { cx: x }, { duration: 1 }],
-          [".", { r: 10 }, { duration: 0.5, at: 0 }],
-          [".", { r: 5 }, { duration: 0.5 }],
-        ])
-        // await Promise.all([
-        //   (async () => {
-        //     await animate(".", { cx: x }, { duration: 1 });
-        //   })(),
-        //   (async () => {
-        //     await animate(".", { r: 10 }, { duration: 0.5 });
-        //     await animate(".", { r: 5 }, { duration: 0.5 });
-        //   })(),
-        // ])
-      }}
-    >
-      <circle cx={x} cy="15" r="5" fill="cornflowerblue" />
-    </Animate>
-  </svg>;
 }
 
 // common utilities
