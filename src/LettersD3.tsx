@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import { useEffect, useMemo } from "react";
 import { Mount } from "./Mount";
 
-export function LettersDemoD3({ letters }: { letters: string[] }) {
+export function LettersD3({ letters }: { letters: string[] }) {
   const [svg, update] = useMemo(() => {
     const svg = d3.create("svg")
       .attr("viewBox", [0, 0, 400, 33])

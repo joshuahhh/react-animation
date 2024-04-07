@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import { motion } from "framer-motion";
 
 
-export function BarsDemoFramer({ xz, yz, layout }: {
+export function BarsFramer({ xz, yz, layout }: {
   xz: number[],
   yz: number[][],
   layout: 'stacked' | 'grouped',

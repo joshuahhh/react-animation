@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 
-export function LettersDemoFramer({ letters }: { letters: string[] }) {
+export function LettersFramer({ letters }: { letters: string[] }) {
   return (
     <svg
       viewBox="0 0 400 33"

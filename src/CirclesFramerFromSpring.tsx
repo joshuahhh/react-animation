@@ -1,15 +1,8 @@
 import { motion } from "framer-motion"
 import { useEffect, useRef } from "react"
 
-export const description = <>
-  <h3>Framer: From Spring</h3>
-  <small>
-    Straightforward conversion of Amelia's approach from React Spring to Framer Motion.
-    New library, same logic.
-  </small>
-</>;
 
-export function Demo({ visibleCircles, allCircles }: {
+export function CirclesFramerFromSpring({ visibleCircles, allCircles }: {
   visibleCircles: number[],
   allCircles: number[],
 }) {

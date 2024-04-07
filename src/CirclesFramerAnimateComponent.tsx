@@ -1,14 +1,8 @@
 import { AnimatePresence } from "framer-motion";
 import { Animate } from "./Animate";
 
-export const description = <>
-  <h3>Framer: Josh's Animate component</h3>
-  <small>
-    Using Josh's "Animate" component, a wrapper around useAnimate.
-  </small>
-</>;
 
-export function Demo ({ visibleCircles }: {
+export function CirclesFramerAnimateComponent ({ visibleCircles }: {
   visibleCircles: number[],
 }) {
   return <svg viewBox="0 0 100 20">

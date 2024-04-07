@@ -1,15 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
 
-export const description = <>
-  <h3>Framer: Declarative API</h3>
-  <small>
-    The way you're supposed to use Framer Motion.
-    To replicate the demo's "color during transition" behavior, we use some abrupt easing curves.
-    Note different behavior: blue goes away when the animation ends.
-    {/* That's because "enter animation" is different from "between enter and update". */}
-    {/* Frankly, I think "between enter and update" is a weird thing to want */}
-  </small>
-</>;
 
 function atEnd(t: number) {
   return t >= 1 ? 1 : 0;
@@ -19,7 +9,7 @@ function atStart(t: number) {
   return t <= 0 ? 0 : 1;
 }
 
-export function Demo ({ visibleCircles }: {
+export function CirclesFramerDeclarative ({ visibleCircles }: {
   visibleCircles: number[],
 }) {
   const duration = 1.2;

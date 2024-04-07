@@ -1,17 +1,18 @@
 import * as d3 from "d3"
-import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react'
-import { BarsDemoAnimateComponentAsync } from "./BarsAnimateComponentAsync"
-import { BarsDemoAnimateComponentSeq } from "./BarsAnimateComponentSeq"
-import { BarsDemoD3 } from "./BarsD3"
-import { BarsDemoFramer } from "./BarsFramer"
-import * as CirclesAmelia from "./CirclesAmelia"
-import * as CirclesD3 from "./CirclesD3"
-import * as CirclesFramerAnimateComponent from "./CirclesFramerAnimateComponent"
-import * as CirclesFramerDeclarative from "./CirclesFramerDeclarative"
-import * as CirclesFramerFromSpring from "./CirclesFramerFromSpring"
-import * as CirclesFramerUseAnimate from "./CirclesFramerUseAnimate"
-import { LettersDemoD3 } from "./LettersD3"
-import { LettersDemoFramer } from "./LettersFramer"
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { BarsAnimateComponentAsync } from "./BarsAnimateComponentAsync"
+import { BarsAnimateComponentSeq } from "./BarsAnimateComponentSeq"
+import { BarsD3 } from "./BarsD3"
+import { BarsFramer } from "./BarsFramer"
+import { CirclesAmelia } from "./CirclesAmelia"
+import { CirclesD3 } from "./CirclesD3"
+import { CirclesFramerAnimateComponent } from "./CirclesFramerAnimateComponent"
+import { CirclesFramerDeclarative } from "./CirclesFramerDeclarative"
+import { CirclesFramerFromSpring } from "./CirclesFramerFromSpring"
+import { CirclesFramerUseAnimate } from "./CirclesFramerUseAnimate"
+import { CodeLink } from "./CodeLink"
+import { LettersD3 } from "./LettersD3"
+import { LettersFramer } from "./LettersFramer"
 
 
 export function App() {
@@ -76,21 +77,59 @@ function CirclesDemos() {
 
   return <>
     {/* grid of demos */}
-    <div style={{ display: "grid", gridTemplateColumns: "auto 400px", gap: 10 }}>
-      {demos.map((demo, i) => (
-        <Fragment key={i}>
-          <div>{demo.description}</div>
-          <demo.Demo visibleCircles={visibleCircles} allCircles={allCircles} />
-        </Fragment>
-      ))}
+    <div
+      className="demo-table"
+      style={{ display: "grid", gap: 10 }}
+    >
+      <div>
+        <h3 className="f-row">Goal: Original D3 <CodeLink fileName="CirclesD3.tsx"/></h3>
+        <small>
+          The "before" from Amelia's post. A conventional D3 approach using join to handle enter/exit/update (with a minimal React wrapper).
+        </small>
+      </div>
+      <CirclesD3 visibleCircles={visibleCircles} />
+      <div>
+        <h3 className="f-row">Amelia's React version w/ React Spring <CodeLink fileName="CirclesAmelia.tsx"/></h3>
+        <small>
+          The "after" from Amelia's post. No D3. Instead, draw a component in each postion which uses a React "ref" to detect when a circle enters or exits that position. The library React Spring handles animation.
+        </small>
+      </div>
+      <CirclesAmelia visibleCircles={visibleCircles} allCircles={allCircles} />
+      <div>
+        <h3 className="f-row">Framer: From Spring <CodeLink fileName="CirclesFramerFromSpring.tsx"/></h3>
+        <small>
+          Straightforward conversion of Amelia's approach from React Spring to Framer Motion. New library, same logic.
+        </small>
+      </div>
+      <CirclesFramerFromSpring visibleCircles={visibleCircles} allCircles={allCircles} />
+      <div>
+        <h3 className="f-row">Framer: Declarative API <CodeLink fileName="CirclesFramerDeclarative.tsx"/></h3>
+        <small>
+          The way you're supposed to use Framer Motion. To replicate the demo's "color during transition" behavior, we use some abrupt easing curves. Note different behavior: blue goes away when the animation ends. {/* That's because "enter animation" is different from "between enter and update". Frankly, I think "between enter and update" is a weird thing to want */}
+        </small>
+      </div>
+      <CirclesFramerDeclarative visibleCircles={visibleCircles} />
+      <div>
+        <h3 className="f-row">Framer: useAnimate <CodeLink fileName="CirclesFramerUseAnimate.tsx"/></h3>
+        <small>
+          Using Framer Motion's "useAnimate", an imperative API similar to D3's transitions.
+        </small>
+      </div>
+      <CirclesFramerUseAnimate visibleCircles={visibleCircles} />
+      <div>
+        <h3 className="f-row">Framer: Animate component <CodeLink fileName="CirclesFramerAnimateComponent.tsx"/></h3>
+        <small>
+          Using Josh's "Animate" component, a wrapper around useAnimate.
+        </small>
+      </div>
+      <CirclesFramerAnimateComponent visibleCircles={visibleCircles} />
       <div>
         <h3 onClick={() => setShowStatic((old) => !old)} style={{marginLeft: -25, cursor: 'pointer'}}>
           <div style={{display: 'inline-block', width: 25}}>{ showStatic ? '▼' : '▶' }</div>
           Static
         </h3>
         { showStatic && <small>
-          Just draw the circles.
-          For debugging; also as a reminder of how simple things are without animation.
+          Just draw the circles. For debugging; also as a reminder of how simple things are without animation.
         </small> }
       </div>
       <div>
@@ -125,20 +164,6 @@ function CirclesDemos() {
   </>;
 }
 
-type Circles = {
-  description: React.ReactNode,
-  Demo: React.ComponentType<{ visibleCircles: number[], allCircles: number[] }>,
-}
-
-const demos: Circles[] = [
-  CirclesD3,
-  CirclesAmelia,
-  CirclesFramerFromSpring,
-  CirclesFramerDeclarative,
-  CirclesFramerUseAnimate,
-  CirclesFramerAnimateComponent,
-]
-
 // letters
 
 function LettersDemos() {
@@ -153,10 +178,10 @@ function LettersDemos() {
   }, 2000);
 
   return <div style={{ display: "grid", gridTemplateColumns: "auto 400px", gap: 10 }}>
-    <div><h3>Original</h3></div>
-    <LettersDemoD3 letters={randomLetters} />
-    <div><h3>Framer</h3></div>
-    <LettersDemoFramer letters={randomLetters} />
+    <div><h3 className="f-row">Original <CodeLink fileName="LettersD3.tsx"/></h3></div>
+    <LettersD3 letters={randomLetters} />
+    <div><h3 className="f-row">Framer <CodeLink fileName="LettersFramer.tsx"/></h3></div>
+    <LettersFramer letters={randomLetters} />
     {/* <div><h3>Data</h3></div>
     <div>{randomLetters.join("")}</div> */}
   </div>;
@@ -204,10 +229,10 @@ function BarsDemos() {
       )}
     </div>
     <div style={{ display: "grid", gridTemplateColumns: "auto 400px", gap: 10 }}>
-      <h3>Original</h3>
-      <BarsDemoD3 {...{xz, yz, layout}} />
-      <h3>Framer Motion</h3>
-      <BarsDemoFramer {...{xz, yz, layout}} />
+      <div><h3 className="f-row">Original <CodeLink fileName="BarsD3.tsx"/></h3></div>
+      <BarsD3 {...{xz, yz, layout}} />
+      <div><h3 className="f-row">Framer Motion <CodeLink fileName="BarsFramer.tsx"/></h3></div>
+      <BarsFramer {...{xz, yz, layout}} />
       <div style={{ gridColumn: 'span 2 / span 2' }}>
       <p>
         Current stance: It's doable, but I think the sequencing API (that I'm using) is inferior to D3. Seems like I should use useAnimate for sequencing, but that requires making a per-rectangle component, which is unergonomic.
@@ -216,10 +241,10 @@ function BarsDemos() {
         Small difference in behavior when you change layout type faster than animations: D3 finishes the old animation before moving to the new one; Framer Motion cancels the old animation and starts the new one immediately. Can't say for sure which is preferable.
       </p>
       </div>
-      <h3>Josh's Animate component (async style)</h3>
-      <BarsDemoAnimateComponentAsync {...{xz, yz, layout}} />
-      <h3>Josh's Animate component (seq style)</h3>
-      <BarsDemoAnimateComponentSeq {...{xz, yz, layout}} />
+      <div><h3 className="f-row">Animate component (async style) <CodeLink fileName="BarsAnimateComponentAsync.tsx"/></h3></div>
+      <BarsAnimateComponentAsync {...{xz, yz, layout}} />
+      <div><h3 className="f-row">Animate component (seq style) <CodeLink fileName="BarsAnimateComponentSeq.tsx"/></h3></div>
+      <BarsAnimateComponentSeq {...{xz, yz, layout}} />
     </div>
   </div>;
 }

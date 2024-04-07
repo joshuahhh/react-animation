@@ -3,7 +3,7 @@ import { useMemo, useEffect } from "react";
 import { Mount } from "./Mount";
 
 
-export function BarsDemoD3({ xz, yz, layout }: {
+export function BarsD3({ xz, yz, layout }: {
   xz: number[],
   yz: number[][],
   layout: 'stacked' | 'grouped',

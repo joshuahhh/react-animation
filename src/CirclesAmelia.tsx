@@ -2,17 +2,7 @@ import { animated, useSpring } from "@react-spring/web";
 import { useEffect, useRef } from "react";
 
 
-export const description = <>
-  <h3>Amelia's React version, using React Spring</h3>
-  <small>
-    The "after" from Amelia's post. No D3.
-    Instead, draw a component in each postion
-    which uses a React "ref" to detect when a circle enters or exits that position.
-    The library React Spring handles animation.
-  </small>
-</>;
-
-export function Demo ({ visibleCircles, allCircles }: {
+export function CirclesAmelia({ visibleCircles, allCircles }: {
   visibleCircles: number[],
   allCircles: number[],
 }) {

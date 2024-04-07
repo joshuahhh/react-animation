@@ -2,16 +2,7 @@ import * as d3 from "d3";
 import { useEffect, useRef } from "react";
 
 
-export const description = <>
-  <h3>Goal: Original D3</h3>
-  <small>
-    The "before" from Amelia's post.
-    A conventional D3 approach using join to handle enter/exit/update
-    (with a minimal React wrapper).
-  </small>
-</>;
-
-export function Demo({ visibleCircles }: {
+export function CirclesD3({ visibleCircles }: {
   visibleCircles: number[]
 }) {
   const svgRef = useRef<SVGSVGElement>(null)

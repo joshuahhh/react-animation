@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import { Animate, attrX, attrY } from "./Animate";
 
 
-export function BarsDemoAnimateComponentSeq({ xz, yz, layout }: {
+export function BarsAnimateComponentSeq({ xz, yz, layout }: {
   xz: number[],
   yz: number[][],
   layout: 'stacked' | 'grouped',

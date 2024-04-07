@@ -1,14 +1,8 @@
 import { AnimatePresence, useAnimate, usePresence } from "framer-motion";
 import { useEffect } from "react";
 
-export const description = <>
-  <h3>Framer: useAnimate</h3>
-  <small>
-    Using Framer Motion's "useAnimate", an imperative API similar to D3's transitions.
-  </small>
-</>;
 
-export function Demo ({ visibleCircles }: {
+export function CirclesFramerUseAnimate({ visibleCircles }: {
   visibleCircles: number[],
 }) {
   return <svg viewBox="0 0 100 20">
