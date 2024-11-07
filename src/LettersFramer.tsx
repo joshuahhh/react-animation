@@ -11,7 +11,7 @@ export function LettersFramer({ letters }: { letters: string[] }) {
       }}
     >
       <AnimatePresence initial={true}>
-        {letters.map((d, i) =>
+        {letters.map((d, i) => (
           <motion.text
             key={d}
             dy="0.35em"
@@ -22,7 +22,7 @@ export function LettersFramer({ letters }: { letters: string[] }) {
           >
             {d}
           </motion.text>
-        )}
+        ))}
       </AnimatePresence>
     </svg>
   );

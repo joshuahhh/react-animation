@@ -1,23 +1,39 @@
-import { AnimationPlaybackControls, AnimationSequence, SVGKeyframesDefinition, useAnimate, usePresence } from "framer-motion";
+import {
+  AnimationPlaybackControls,
+  AnimationSequence,
+  SVGKeyframesDefinition,
+  useAnimate,
+  usePresence,
+} from "framer-motion";
 import { ReactElement, cloneElement, useEffect, useMemo } from "react";
 
-
-export function Animate({ children, sequence, animator, enter, exit }: {
-  children: ReactElement,
-  sequence?: AnimationSequence,
+export function Animate({
+  children,
+  sequence,
+  animator,
+  enter,
+  exit,
+}: {
+  children: ReactElement;
+  sequence?: AnimationSequence;
   animator?: (props: {
-    animate: ReturnType<typeof useAnimate>[1],
-    presence: ReturnType<typeof usePresence>,
-  }) => Promise<void>,
-  enter?: (props: { animate: ReturnType<typeof useAnimate>[1] }) => Promise<void>,
-  exit?: (props: { animate: ReturnType<typeof useAnimate>[1] }) => Promise<void>,
+    animate: ReturnType<typeof useAnimate>[1];
+    presence: ReturnType<typeof usePresence>;
+  }) => Promise<void>;
+  enter?: (props: {
+    animate: ReturnType<typeof useAnimate>[1];
+  }) => Promise<void>;
+  exit?: (props: {
+    animate: ReturnType<typeof useAnimate>[1];
+  }) => Promise<void>;
 }) {
   const presence = usePresence();
   const [scope, animate] = useAnimate();
 
-  const child = useMemo(() => (
-    cloneElement(children, { ref: scope })
-  ), [children, scope]);
+  const child = useMemo(
+    () => cloneElement(children, { ref: scope }),
+    [children, scope],
+  );
 
   useEffect(() => {
     if (animator) {
@@ -36,7 +52,7 @@ export function Animate({ children, sequence, animator, enter, exit }: {
       animator({ animate: animatePatched, presence });
       return () => {
         activeAnimations.forEach((controls) => controls.stop());
-      }
+      };
     }
   }, [animate, animator, presence, scope]);
 
@@ -46,28 +62,33 @@ export function Animate({ children, sequence, animator, enter, exit }: {
       const controls = animateWithDot(sequence);
       return () => {
         controls.stop();
-      }
+      };
     }
-  }, [animate, scope, sequence])
+  }, [animate, scope, sequence]);
 
   useEffect(() => {
-    if (presence[0] && enter) {  // "enter"
+    if (presence[0] && enter) {
+      // "enter"
       enter({ animate: addDotToAnimate(animate, scope.current) });
     }
   }, [animate, enter, presence, scope]);
 
   useEffect(() => {
-    if (!presence[0] && exit) {  // "exit"
+    if (!presence[0] && exit) {
+      // "exit"
       exit({ animate: addDotToAnimate(animate, scope.current) }).then(() => {
         presence[1]();
-      })
+      });
     }
   }, [animate, exit, presence, scope]);
 
   return child;
 }
 
-function addDotToAnimate(animate: ReturnType<typeof useAnimate>[1], element: HTMLElement) {
+function addDotToAnimate(
+  animate: ReturnType<typeof useAnimate>[1],
+  element: HTMLElement,
+) {
   return (...args: any) => {
     // handle animate(".", ...)
     if (args[0] === ".") {
@@ -82,15 +103,15 @@ function addDotToAnimate(animate: ReturnType<typeof useAnimate>[1], element: HTM
       }
     }
     return animate.apply(null, args);
-  }
-};
+  };
+}
 
 export function sequence(...args: AnimationSequence) {
   return args;
 }
 
 export function delay(duration: number): Promise<void> {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(resolve, duration * 1000);
   });
 }
